@@ -1,0 +1,39 @@
+// Copyright (C) 2006 Cliff L. Biffle.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+package propasm.model;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+
+public class TestEffect {
+  /**
+   * A very loose check of {@link Effect#applyToWord(int)}.  Doesn't attempt to
+   * check the actual flag values for more than a handful of Effects, but
+   * validates that those effects touch only the bits they should (and thus the
+   * application algorithm). 
+   */
+  @Test public void testBasicApplication() {
+    int word = 0xA5A5A5A5;
+    word = Effect.NC.applyToWord(word);
+    assertEquals(0xA4A5A5A5, word);
+    word = Effect.WZ.applyToWord(word);
+    assertEquals(0xA6A5A5A5, word);
+    word = Effect.NR.applyToWord(word);
+    assertEquals(0xA625A5A5, word);
+  }
+}
