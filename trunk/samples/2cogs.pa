@@ -1,0 +1,39 @@
+'
+' 2-COG BLINKER
+
+
+cog1
+		mov time1, #@cog2
+		shl time1, #2
+		or time1, #%1000 ' new cog
+		coginit time1
+		
+		mov DIRA, mask1		' pins to output
+		mov time1, CNT		' get system counter...
+		add time1, cps1		' ...and add a second.
+		
+blink1	or OUTA, mask1		' OR our pins to high
+		waitcnt time1, cps1	' wait, adding another second when we're ready
+		andn OUTA, mask1	' AND-NOT our pins to low
+		waitcnt time1, cps1	' wait, adding another second when we're ready
+		jmp #blink1			' loop
+		
+mask1	long $000F_0000		' mask for LED pins
+cps1	long 80_000_000		' number of clocks per second
+time1	long 0				' a temporary word for computing delays
+
+cog2
+		org
+		mov DIRA, mask2		' pins to output
+		mov time2, CNT		' get system counter...
+		add time2, cps2		' ...and add a second.
+		
+blink2	or OUTA, mask2		' OR our pins to high
+		waitcnt time2, cps2	' wait, adding another second when we're ready
+		andn OUTA, mask2	' AND-NOT our pins to low
+		waitcnt time2, cps2	' wait, adding another second when we're ready
+		jmp #blink2			' loop
+		
+mask2	long $00F0_0000		' mask for LED pins
+cps2	long 40_000_000		' number of clocks per second
+time2	res 1				' a temporary word for computing delays

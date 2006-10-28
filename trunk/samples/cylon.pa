@@ -1,0 +1,30 @@
+		mov DIRA, mask		' pins to output
+		mov time, CNT		' get system counter...
+		add time, cps		' ...and add a second.
+		
+stepl	mov temp, state
+		shl temp, #16
+		or OUTA, temp		' OR our pins to high
+		waitcnt time, cps	' wait, adding another second when we're ready
+		andn OUTA, temp		' AND-NOT our pins to low
+		shl state, #1
+		cmp state, #$100 wz
+  if_nz jmp #stepl 
+  
+   		shr state, #2
+stepr	mov temp, state
+		shl temp, #16
+		or OUTA, temp		' OR our pins to high
+		waitcnt time, cps	' wait, adding another second when we're ready
+		andn OUTA, temp		' AND-NOT our pins to low
+		shr state, #1
+		cmp state, #0 wz
+  if_nz jmp #stepr
+  		mov state, #2
+  		jmp #stepl 
+		
+mask	long $00FF_0000		' mask for LED pins
+state	long $1				' state holder
+cps		long 8_000_000		' 1/10 sec
+time	res 1				' a temporary word for computing delays
+temp	res 1

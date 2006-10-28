@@ -1,0 +1,63 @@
+<project name="propasm" default="package">
+  <property name="src" value="src"/>
+  <property name="tests-src" value="tests"/>
+  <property name="build" value="bin"/>
+  <property name="tests-build" value="bin"/>
+  <property name="package" value="${ant.project.name}.jar"/>
+
+  <path id="test-libs">
+    <fileset dir="tests-lib">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="package" depends="compile">
+    <jar destfile="${package}"
+         basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="propasm.parallax.ParallaxFrontend"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile-tests" depends="compile">
+    <mkdir dir="${tests-build}" />
+    <javac destdir="${tests-build}">
+      <classpath>
+	<path refid="test-libs"/>
+	<pathelement location="${build}"/>
+      </classpath>
+      <src path="${tests-src}"/>
+    </javac>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${build}" />
+    <javac destdir="${build}">
+      <src path="${src}"/>
+    </javac>
+  </target>
+	
+  <target name="javadoc">
+  	<javadoc packagenames="propasm.*"
+  		     sourcepath="${src}"
+  		     destdir="docs/api"
+  		     overview="overview.html"
+  	         author="true"
+  		     version="true"
+  		     use="true"
+  		     windowtitle="propasm">
+  	</javadoc>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${tests-build}"/>
+  </target>
+	
+  <target name="clean-all" depends="clean">
+  	<delete dir="docs/api"/>
+  	<delete file="${package}"/>
+  </target>
+</project>

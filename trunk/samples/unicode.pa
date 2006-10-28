@@ -1,0 +1,12 @@
+		mov DIRA, mãsk	' outputs
+		mov time, CNT
+		add time, cps
+blínk	mov OUTA, mãsk	' high
+		waitcnt time, cps
+		mov OUTA, #0	' los
+		waitcnt time, cps
+		jmp #blínk		
+		
+mãsk	long $00FF_0000	' light port mask
+cps		long 80_000_000
+time	res 1
