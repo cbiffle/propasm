@@ -16,7 +16,12 @@
 package propasm.model;
 
 /**
- * Models a literal number or resolved label reference, when used as an operand.
+ * Models a 9-bit literal number or resolved label reference, when used as an
+ * operand.
+ * 
+ * From the Java perspective, this class accepts the union of all unsigned 9-bit
+ * integers, and all signed two's-complement 9-bit integers.  Thus, any value
+ * between 511 and -256 will work. 
  * 
  * @author cbiffle
  *
@@ -24,10 +29,26 @@ package propasm.model;
 public class NumericOperand extends Operand {
   private final int value;
   public NumericOperand(int value) {
-/*    if(value < -256 || value > 511) {
-      throw new IllegalArgumentException("Value out of range: " + value);
-    }*/
-    this.value = value;
+    this(value, 9);
+  }
+  public NumericOperand(int value, int bits) {
+    if(value > (-1 >>> (32 - (bits - 1)))) {
+      // Treat as unsigned
+      if(value > (-1 >>> (32 - bits))) {
+        throw new IllegalArgumentException("Unsigned value out of range for " +
+                        "9-bit field: " + value);
+      }
+    } else {
+      // Treat as signed
+      // Drop all but relevant bits, and sign-extend back to 32.
+      int effectiveValue = (value << (32 - bits)) >> (32 - bits);
+      // Did we lose meaning?
+      if(value != effectiveValue) { 
+        throw new IllegalArgumentException("Value out of range for " + bits + 
+                                           "-bit field: " + value);
+      }
+    }
+    this.value = value & (-1 >>> (32 - bits));
   }
   
   @Override
