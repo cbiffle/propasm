@@ -195,35 +195,69 @@ public class ParallaxParser {
     if(current.is(COMMENT)) {
       return;
     }
-    if(!current.is(IDENT)) {
+    if(!current.is(IDENT) && !current.is(DOT)) {
       throw new ParseException("Expecting operation or directive, found: " + current.getText(),
                                current);
     }
-    String text = current.getText();
-    if(text.equals("org")) {
-      if(pred != null) {
-        throw new ParseException("Cannot use predicate with ORG.", current);
-      }
-      orgDirective();
-    } else if(text.equals("fit")) {
-      if(pred != null) {
-        throw new ParseException("Cannot use predicate with FIT.", current);
-      }
-      fitDirective();
-    } else if(text.equals("res")) {
-      if(pred != null) {
-        throw new ParseException("Cannot use predicate with RES.", current);
-      }
-      res();
-    } else if(text.equals("byte")) {
-      byteData();
-    } else if(text.equals("word")) {
-      wordData();
-    } else if(text.equals("long")) {
-      longData();
+    if(current.is(DOT)) {
+      extendedDirective();
     } else {
-      op(pred);
+      String text = current.getText();
+      if(text.equals("org")) {
+        if(pred != null) {
+          throw new ParseException("Cannot use predicate with ORG.", current);
+        }
+        orgDirective();
+      } else if(text.equals("fit")) {
+        if(pred != null) {
+          throw new ParseException("Cannot use predicate with FIT.", current);
+        }
+        fitDirective();
+      } else if(text.equals("res")) {
+        if(pred != null) {
+          throw new ParseException("Cannot use predicate with RES.", current);
+        }
+        res();
+      } else if(text.equals("byte")) {
+        byteData();
+      } else if(text.equals("word")) {
+        wordData();
+      } else if(text.equals("long")) {
+        longData();
+      } else {
+        op(pred);
+      }
     }
+  }
+  /*
+   * extended-directive ::= DOT IDENT ( operand ( COMMA operand )* )?
+   */
+  private void extendedDirective() throws AssemblyInputException {
+    advance(); // skip dot
+    expect(IDENT, "Expecting extended directive");
+    
+    String text = current.getText();
+    advance();
+    if(text.equals("align")) {
+      alignDirective();
+    }
+  }
+  
+  private void alignDirective() throws AssemblyInputException {
+    allowOptionalWhitespace();
+    expect(IDENT, "Expecting alignment type");
+    
+    String text = current.getText();
+    if(text.equals("byte")) {
+      // no-op
+    } else if(text.equals("word")) {
+      builder.ensureWordAlignment();
+    } else if(text.equals("long")) {
+      builder.ensureLongAlignment();
+    } else {
+      throw new ParseException("Invalid alignment type: " + text, current);
+    }
+    advance();
   }
   /*
    * org-directive ::= "org" SPACE <optional-number>
@@ -289,6 +323,7 @@ public class ParallaxParser {
                                current);
     }
     Operand value = operand(16);
+    builder.ensureWordAlignment();
     if(value.containsValue()) {
       int constant = value.getValue();
       builder.addWord(constant);
@@ -302,6 +337,7 @@ public class ParallaxParser {
       advance();
       allowOptionalWhitespace();
       value = operand(16);
+      builder.ensureWordAlignment();
       if(value.containsValue()) {
         int constant = value.getValue();
         builder.addWord(constant);
@@ -324,6 +360,7 @@ public class ParallaxParser {
                                current);
     }
     Operand value = operand(32);
+    builder.ensureLongAlignment();
     if(value.containsValue()) {
       int constant = value.getValue();
       builder.addLong(constant);
@@ -337,6 +374,7 @@ public class ParallaxParser {
       advance();
       allowOptionalWhitespace();
       value = operand(32);
+      builder.ensureLongAlignment();
       if(value.containsValue()) {
         int constant = value.getValue();
         builder.addLong(constant);
@@ -562,6 +600,22 @@ public class ParallaxParser {
    */
   private void advance() {
     current = tokens.next();
+  }
+  
+  /**
+   * Verifies that the current token is of a given type, without advancing.
+   * If the type is wrong, throws a ParseException using the {@code context}
+   * message.
+   * 
+   * @param type  type of token expected.
+   * @param context  brief message describing context (e.g. "parsing number")
+   * @throws ParseException  if the token does not match.
+   */
+  private void expect(Token.Type type, String context) throws ParseException {
+    if(!current.is(type)) {
+      throw new ParseException(context +" (found: " + current.getText() + ")",
+                               current);
+    }
   }
   
 }

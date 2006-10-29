@@ -302,16 +302,15 @@ public class ProgramBuilder implements SymbolTable {
     write((value >> 8) & 0xFF);
   }
 
-  private void ensureWordAlignment() {
+  public void ensureWordAlignment() {
     align(2);
   }
-  private void ensureLongAlignment() {
+  public void ensureLongAlignment() {
     align(4);
   }
-  private void align(int unit) {
+  public void align(int unit) {
     int offset = unit - (output.position() & (unit - 1));
     if(offset == unit) return;
-//    System.out.println("Emitting " + offset + " bytes to align to " + unit);
     for(int i = 0; i < offset; i++) write(0);
   }
   private byte computeChecksum(byte[] bytes) {

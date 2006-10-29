@@ -113,6 +113,8 @@ public class ParallaxLexer {
       quickToken(COLON, ":");
     } else if(c == '@') {
       quickToken(AT, "@");
+    } else if(c == '.') {
+      quickToken(DOT, ".");
     } else {
       throw new ParseException("Unexpected character '" + (char)c + "'",
                                lineNumber, colNumber);
