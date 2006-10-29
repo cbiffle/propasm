@@ -158,8 +158,7 @@ public class ProgramBuilder implements SymbolTable {
    */
   public void addWord(int value) {
     flushReservation();
-    write(value & 0xFF);
-    write((value >> 8) & 0xFF);
+    writeWord(value);
   }
   
   /**
