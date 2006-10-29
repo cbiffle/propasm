@@ -38,6 +38,8 @@ public class ParallaxFrontend implements InclusionHandler {
     new ParallaxFrontend().assemble(args);
   }
   
+  private ProgramBuilder builder;
+  
   public void assemble(String[] args) throws IOException, AssemblyInputException {
     if(args.length == 0) {
       printUsage();
@@ -46,10 +48,10 @@ public class ParallaxFrontend implements InclusionHandler {
     
     for(String filename : args) {
       
-      ProgramBuilder builder = new ProgramBuilder();
+      builder = new ProgramBuilder();
       long time = System.currentTimeMillis();
       try {
-        parse(builder, filename);
+        parse(filename);
       } catch(Exception e) {
         if(e instanceof RuntimeException) throw (RuntimeException)e;
         // abort file
@@ -77,14 +79,15 @@ public class ParallaxFrontend implements InclusionHandler {
     }
   }
   
-  public void include(String filename) throws AssemblyInputException {
-    // TODO
+  public void include(String filename)
+  throws IOException,AssemblyInputException {
+    parse(filename);
   }
   
-  private void parse(ProgramBuilder builder, String filename) throws IOException, AssemblyInputException {
+  private void parse(String filename) throws IOException, AssemblyInputException {
     Reader in = new InputStreamReader(new FileInputStream(filename), "UTF8");
     ParallaxLexer lexer = new ParallaxLexer(in);
-    ParallaxParser parser = new ParallaxParser(builder);
+    ParallaxParser parser = new ParallaxParser(builder, this);
     Iterable<Token> tokens;
     try {
       tokens = lexer.lex();

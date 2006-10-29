@@ -15,6 +15,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package propasm.parallax;
 
+import java.io.IOException;
+
 import propasm.model.AssemblyInputException;
 
 /**
@@ -22,5 +24,5 @@ import propasm.model.AssemblyInputException;
  *
  */
 public interface InclusionHandler {
-  void include(String path) throws AssemblyInputException;
+  void include(String path) throws IOException, AssemblyInputException;
 }

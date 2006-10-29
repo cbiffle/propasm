@@ -105,6 +105,8 @@ public class ParallaxLexer {
       decimalLiteral();
     } else if(c == '\'') {
       comment();
+    } else if(c == '"') {
+      string();
     } else if(c == '#') {
       quickToken(HASH, "#");
     } else if(c == ',') {
@@ -224,6 +226,58 @@ public class ParallaxLexer {
       appendAndAdvance();
     }
     finishToken(COMMENT);
+  }
+
+  private void string() throws IOException, ParseException {
+    readChar(); // do not include initial quote mark.
+    
+    boolean escape = false;
+    while(escape || c != '"') {
+      if(c == '\n' || c == '\r') {
+        throw new ParseException("String literals cannot span lines.",
+                                 lineNumber, colNumber);
+      } else if(c == -1) {
+        throw new ParseException("Unterminated string literal at EOF",
+                                 lineNumber, colNumber);
+      } else if(escape) {
+        switch(c) {
+        case '\\':
+          currentText.append('\\');
+          break;
+        case 'n':
+          currentText.append('\n');
+          break;
+        case 'r':
+          currentText.append('\r');
+          break;
+        case 'e':
+          currentText.append((char)0x1B);
+          break;
+        case 'b':
+          currentText.append('\b');
+          break;
+        case 'f':
+          currentText.append('\f');
+          break;
+        case '"':
+          currentText.append('"');
+          break;
+        default:
+          throw new ParseException("Unknown character escape '\\" + (char)c + "'",
+                                   lineNumber, colNumber);
+        }
+        readChar();
+        escape = false;
+      } else if(c == '\\') {
+        escape = true;
+        readChar();
+      } else {
+        appendAndAdvance();
+      }
+    }
+    readChar(); // omit final quote mark
+    
+    finishToken(STRING);
   }
   
   //// END TOKEN PROCESSING METHODS

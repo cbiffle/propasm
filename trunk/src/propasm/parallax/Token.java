@@ -53,6 +53,8 @@ public class Token {
     SPACE,
     /** A comment. */
     COMMENT,
+    /** An inline string. */
+    STRING,
     /** A Unix, DOS, or pre-Unix Mac line ending. */
     NL,
     /** Virtual token for end-of-file. */

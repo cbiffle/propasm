@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package propasm.parallax;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import propasm.model.AssemblyInputException;
@@ -54,6 +55,8 @@ public class ParallaxParser {
 
   /** ProgramBuilder used as output. */
   private final ProgramBuilder builder;
+  /** Enclosing context for inclusions. */
+  private final InclusionHandler parent;
   /** Token iterator derived from lexer's Iterable. */
   private Iterator<Token> tokens;
   
@@ -68,7 +71,8 @@ public class ParallaxParser {
    * 
    * @param builder  output target.
    */
-  public ParallaxParser(ProgramBuilder builder) {
+  public ParallaxParser(ProgramBuilder builder, InclusionHandler parent) {
+    this.parent = parent;
     this.builder = builder;
   }
   
@@ -237,9 +241,15 @@ public class ParallaxParser {
     expect(IDENT, "Expecting extended directive");
     
     String text = current.getText();
+    int line = current.getLine(), col = current.getColumn();
     advance();
     if(text.equals("align")) {
       alignDirective();
+    } else if(text.equals("include")) {
+      includeDirective();
+    } else {
+      throw new ParseException("Unknown directive: ." + text,
+                               line, col);
     }
   }
   
@@ -256,6 +266,19 @@ public class ParallaxParser {
       builder.ensureLongAlignment();
     } else {
       throw new ParseException("Invalid alignment type: " + text, current);
+    }
+    advance();
+  }
+  
+  private void includeDirective() throws AssemblyInputException {
+    allowOptionalWhitespace();
+    expect(STRING, "Expecting include filename");
+    
+    String filename = current.getText();
+    try {
+      parent.include(filename);
+    } catch(IOException e) {
+      throw new ParseException("Could not include " + filename, current);
     }
     advance();
   }
@@ -595,6 +618,7 @@ public class ParallaxParser {
   private void allowOptionalWhitespace() {
     if(current.is(SPACE)) advance();
   }
+  
   /**
    * Advances to the next token.
    */
