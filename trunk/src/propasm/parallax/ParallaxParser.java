@@ -262,6 +262,20 @@ public class ParallaxParser {
                                line, col);
     }
     builder.addByte((byte)constant);
+    
+    allowOptionalWhitespace();
+    while(current.is(COMMA)) {
+      advance();
+      allowOptionalWhitespace();
+      constant = number();
+      highbits = constant & 0xFFFFFF00;
+      if(highbits != 0 && highbits != 0xFFFFFF00) {
+        throw new ParseException("Constant out of range for byte literal: " + constant,
+                                 line, col);
+      }
+      builder.addByte((byte)constant);
+      allowOptionalWhitespace();
+    }
   }
   /*
    * word-data ::= "word" SPACE <number>
@@ -274,19 +288,28 @@ public class ParallaxParser {
       throw new ParseException("Expected whitespace after BYTE, found: " + current.getText(),
                                current);
     }
-    int line = current.getLine(), col = current.getColumn();
     Operand value = operand(16);
     if(value.containsValue()) {
       int constant = value.getValue();
-      int highbits = constant & 0xFFFF0000;
-      if(highbits != 0 && highbits != 0xFFFF0000) {
-        throw new ParseException("Constant out of range for word literal: " + constant,
-                                 line, col);
-      }
       builder.addWord(constant);
     } else {
       LabelReference ref = (LabelReference)value;
       builder.addWord(ref.retrieveAddress(builder, 0));
+    }
+    
+    allowOptionalWhitespace();
+    while(current.is(COMMA)) {
+      advance();
+      allowOptionalWhitespace();
+      value = operand(16);
+      if(value.containsValue()) {
+        int constant = value.getValue();
+        builder.addWord(constant);
+      } else {
+        LabelReference ref = (LabelReference)value;
+        builder.addWord(ref.retrieveAddress(builder, 0));
+      }
+      allowOptionalWhitespace();
     }
   }
   /*
@@ -307,6 +330,21 @@ public class ParallaxParser {
     } else {
       LabelReference ref = (LabelReference)value;
       builder.addLong(ref.retrieveAddress(builder, 0));
+    }
+    
+    allowOptionalWhitespace();
+    while(current.is(COMMA)) {
+      advance();
+      allowOptionalWhitespace();
+      value = operand(32);
+      if(value.containsValue()) {
+        int constant = value.getValue();
+        builder.addLong(constant);
+      } else {
+        LabelReference ref = (LabelReference)value;
+        builder.addLong(ref.retrieveAddress(builder, 0));
+      }
+      allowOptionalWhitespace();
     }
   }
   /*
@@ -441,7 +479,7 @@ public class ParallaxParser {
         throw new LogicException("Number out of range for operand: " + value,
                                  line, column);
       }
-      return new NumericOperand(value);
+      return new NumericOperand(value, bits);
     }
     LabelReference.MemoryType type = LabelReference.MemoryType.LOCAL;
     if(current.is(AT)) {

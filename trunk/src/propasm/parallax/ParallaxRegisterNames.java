@@ -65,19 +65,19 @@ public class ParallaxRegisterNames implements RegisterSet {
   }
   
   public Operand getRegister(String register) {
+    Register reg;
     try {
-      
-      Register reg = Register.valueOf(register.toUpperCase());
-      
-      if(reg.isReadOnly()) {
-        return new ReadOnlyRegister(reg.getAddress());
-      } else {
-        return new NumericOperand(reg.getAddress());
-      }
-      
+       reg = Register.valueOf(register.toUpperCase());
     } catch(IllegalArgumentException e) {
       return null;
     }
+    
+    if(reg.isReadOnly()) {
+      return new ReadOnlyRegister(reg.getAddress());
+    } else {
+      return new NumericOperand(reg.getAddress());
+    }
+      
   }
 
 }
