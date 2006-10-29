@@ -47,6 +47,8 @@ public class Token {
     COMMA,
     /** The commercial-at (@), for taking the heap address of a location. */
     AT,
+    /** The dot, indicating a special directive. */
+    DOT,
     /** Any number of non-linebreak whitespace characters. */
     SPACE,
     /** A comment. */
