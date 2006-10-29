@@ -16,6 +16,7 @@
 package propasm.parallax;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
 import propasm.model.AssemblyInputException;
@@ -312,26 +313,49 @@ public class ParallaxParser {
                                current);
     }
     int line = current.getLine(), col = current.getColumn();
-    int constant = number();
-    int highbits = constant & 0xFFFFFF00;
-    if(highbits != 0 && highbits != 0xFFFFFF00) {
-      throw new ParseException("Constant out of range for byte literal: " + constant,
-                               line, col);
-    }
-    builder.addByte((byte)constant);
-    
-    allowOptionalWhitespace();
-    while(current.is(COMMA)) {
+    if(current.is(STRING)) {
+      for(byte b : getUtf8Bytes()) {
+        builder.addByte(b);
+      }
       advance();
-      allowOptionalWhitespace();
-      constant = number();
-      highbits = constant & 0xFFFFFF00;
+    } else {
+      int constant = number();
+      int highbits = constant & 0xFFFFFF00;
       if(highbits != 0 && highbits != 0xFFFFFF00) {
         throw new ParseException("Constant out of range for byte literal: " + constant,
                                  line, col);
       }
       builder.addByte((byte)constant);
+    }
+    
+    allowOptionalWhitespace();
+    while(current.is(COMMA)) {
+      advance();
       allowOptionalWhitespace();
+      line = current.getLine(); col = current.getColumn();
+      if(current.is(STRING)) {
+        for(byte b : getUtf8Bytes()) {
+          builder.addByte(b);
+        }
+        advance();
+      } else {
+        int constant = number();
+        int highbits = constant & 0xFFFFFF00;
+        if(highbits != 0 && highbits != 0xFFFFFF00) {
+          throw new ParseException("Constant out of range for byte literal: " + constant,
+                                   line, col);
+        }
+        builder.addByte((byte)constant);
+      }
+      allowOptionalWhitespace();
+    }
+  }
+
+  private byte[] getUtf8Bytes() {
+    try {
+      return current.getText().getBytes("UTF8");
+    } catch(UnsupportedEncodingException e) {
+      throw new RuntimeException("Platform does not support UTF-8; aborting.");
     }
   }
   /*
