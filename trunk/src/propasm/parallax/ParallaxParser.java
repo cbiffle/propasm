@@ -449,7 +449,13 @@ public class ParallaxParser {
   private int number(int def, boolean required) throws ParseException {
     int value = def;
     if(current.is(HEX_NUMBER)) {
-      value = Integer.parseInt(current.getText().substring(1), 16);
+      long v = Long.parseLong(current.getText().substring(1), 16);
+      if((v >> 32) != 0 && (v >> 32) != -1) {
+        throw new ParseException("Value $" + current.getText() + 
+                                 " is greater than 32 bits in length.",
+                                 current);
+      }
+      value = (int)v;
       advance();
     } else if(current.is(BINARY_NUMBER)) {
       value = Integer.parseInt(current.getText().substring(1), 2);

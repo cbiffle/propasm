@@ -13,25 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-package propasm.parallax.pseudo;
+package propasm.p32;
 
-import propasm.p32.SubSOp;
 
 /**
- * CMPS - pseudo-op
+ * CMPS - 0x30
  * Compares S and D as signed integers.  Optionally sets Z if they are equal,
  * C if D is less than S.
- * 
- * CMPS is a SUBS instruction with the result bit cleared.
  * 
  * @author cbiffle
  *
  */
-public class CmpSOp extends SubSOp {
+public class CmpSOp extends AbstractBinaryOp {
 
   @Override
   public boolean generatesResultByDefault() {
     return false;
+  }
+
+  @Override
+  public int getOpcode() {
+    return 0x30;
   }
 
 }
