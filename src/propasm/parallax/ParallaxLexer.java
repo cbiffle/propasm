@@ -55,6 +55,8 @@ public class ParallaxLexer {
   private int startLine = 1, startCol = 1;
   /** Buffer for building up the text of the current token. */
   private final StringBuilder currentText = new StringBuilder();
+  /** Whether or not we're currently normalizing case to lowercase. */
+  boolean ignoreCase = true;
 
   /**
    * Creates a new, ready-to-use lexer for the given data source.
@@ -229,8 +231,9 @@ public class ParallaxLexer {
   }
 
   private void string() throws IOException, ParseException {
+    ignoreCase = false;
     readChar(); // do not include initial quote mark.
-    
+
     boolean escape = false;
     while(escape || c != '"') {
       if(c == '\n' || c == '\r') {
@@ -275,6 +278,7 @@ public class ParallaxLexer {
         appendAndAdvance();
       }
     }
+    ignoreCase = true;
     readChar(); // omit final quote mark
     
     finishToken(STRING);
@@ -333,7 +337,7 @@ public class ParallaxLexer {
    */
   private void readChar() throws IOException {
     c = in.read();
-    if(c != -1) c = Character.toLowerCase(c);
+    if(c != -1 && ignoreCase) c = Character.toLowerCase(c);
     colNumber++;
     if(c == '\t') {
       colNumber += 7;
