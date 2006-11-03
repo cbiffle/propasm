@@ -187,8 +187,12 @@ public class ProgramBuilder implements SymbolTable {
    * instructions in the source.
    * 
    * @param label  name of label
+   * @throw IllegalStateException  if the label has already been defined.
    */
   public void defineLabel(String label) {
+    if(definedLabels.containsKey(label)) {
+      throw new IllegalStateException("Duplicate definition of label " + label);
+    }
     AddressRecord record = new AddressRecord(getRuntimeAddress(),
                                              getImageAddress());
     definedLabels.put(label, record);
