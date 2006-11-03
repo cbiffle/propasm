@@ -71,6 +71,7 @@ public class ParallaxParser {
    * output and symbol resolution.
    * 
    * @param builder  output target.
+   * @param parent   parent context for handling included files and such.
    */
   public ParallaxParser(ProgramBuilder builder, InclusionHandler parent) {
     this.parent = parent;
@@ -140,10 +141,16 @@ public class ParallaxParser {
   /*
    * label ::= IDENT
    */
-  private void label() {
+  private void label() throws LogicException {
     String label = current.getText();
+    int line = current.getLine(), col = current.getColumn();
     advance();
-    builder.defineLabel(label);
+    try {
+      builder.defineLabel(label);
+    } catch(IllegalStateException e) {
+      throw new LogicException("Label '" + label + "' defined more than once!",
+                               line, col);
+    }
     nonLocalLabel = label;
   }
   
