@@ -30,5 +30,10 @@ public class CmpSubOp extends AbstractBinaryOp {
   public int getOpcode() {
     return 0x28;
   }
+
+  @Override
+  public boolean generatesResultByDefault() {
+    return false;
+  }
   
 }
