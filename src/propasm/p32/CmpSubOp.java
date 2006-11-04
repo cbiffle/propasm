@@ -28,7 +28,7 @@ public class CmpSubOp extends AbstractBinaryOp {
 
   @Override
   public int getOpcode() {
-    return 0x28;
+    return 0x38;
   }
 
   @Override
