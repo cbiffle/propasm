@@ -49,10 +49,12 @@ public class ProgramBuilder implements SymbolTable {
   private int runtimeAddress = 0;
   
   // Machine Settings
-  /** Initial clock speed when this code is loaded. */
-  private int clockSpeed = 80000000;
-  /** Initial clock register configuration. */
-  private byte clk = 0x6F;
+  private PllMode initialPllMode = PllMode.X16;
+  private ClockMode initialClockMode = ClockMode.XTAL1;
+  /** Input clock frequency.  This may be computed from clockSpeed. */
+  private int inputFrequency = 5000000;
+  /** Initial clock speed when this code is loaded.  This may be computed. */
+  private int initialClockFrequency = 0;
   
   /**
    * Labels that have been encountered and defined in the source.
@@ -95,6 +97,27 @@ public class ProgramBuilder implements SymbolTable {
     runtimeAddress = 0;
   }
   
+  public int getInputFrequency() {
+    return inputFrequency;
+  }
+
+  public void setInputFrequency(int inputFrequency) {
+    this.inputFrequency = inputFrequency;
+  }
+  
+  public void setInitialClockMode(ClockMode mode, PllMode pllMode) {
+    initialClockMode = mode;
+    initialPllMode = pllMode;
+  }
+  
+  public int getInitialClockFrequency() {
+    if(initialClockFrequency != 0) {
+      return initialClockFrequency;
+    } else {
+      return initialPllMode.multiply(initialClockMode.derive(inputFrequency));
+    }
+  }
+
   /**
    * Explicitly resets the runtime address.  This does not add or subtract
    * bytes from the output, but purely changes the code's perspective of its
@@ -327,8 +350,8 @@ public class ProgramBuilder implements SymbolTable {
 
   private void fillInPreamble() {
     output.seek(0);
-    writeLong(clockSpeed);
-    write(clk);
+    writeLong(getInitialClockFrequency());
+    write(initialClockMode.getValue(initialPllMode));
     output.seek(0x8);
     writeWord(output.size());
     writeWord(output.size() + 8);
@@ -355,6 +378,13 @@ public class ProgramBuilder implements SymbolTable {
     }
     public int getLocalAddress() {
       return localAddress;
+    }
+    @Override public String toString() {
+      StringBuffer buf = new StringBuffer("image:");
+      buf.append(Integer.toHexString(imageAddress));
+      buf.append(" local:");
+      buf.append(Integer.toHexString(localAddress));
+      return buf.toString();
     }
   }
   
