@@ -122,4 +122,5 @@ public class ParallaxFrontend implements InclusionHandler {
     System.err.println("Any number of input files may be specified, though " +
                 "specifying zero\nwill get you this message.");
   }
+  
 }

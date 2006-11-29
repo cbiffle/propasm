@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
 import propasm.model.AssemblyInputException;
+import propasm.model.ClockMode;
 import propasm.model.Effect;
 import propasm.model.Instruction;
 import propasm.model.InstructionSet;
@@ -28,6 +29,7 @@ import propasm.model.LogicException;
 import propasm.model.NumericOperand;
 import propasm.model.Operand;
 import propasm.model.Operation;
+import propasm.model.PllMode;
 import propasm.model.Predicate;
 import propasm.model.ProgramBuilder;
 import propasm.model.RegisterSet;
@@ -255,6 +257,10 @@ public class ParallaxParser {
       alignDirective();
     } else if(text.equals("include")) {
       includeDirective();
+    } else if(text.equals("xinfreq")) {
+      xinfreqDirective();
+    } else if(text.equals("clkmode")) {
+      clkmodeDirective();
     } else {
       throw new ParseException("Unknown directive: ." + text,
                                line, col);
@@ -290,6 +296,30 @@ public class ParallaxParser {
     }
     advance();
   }
+  
+  private void xinfreqDirective() throws AssemblyInputException {
+    allowOptionalWhitespace();
+    expect(DECIMAL_NUMBER, "Expecting input frequency");
+    
+    builder.setInputFrequency(Integer.parseInt(current.getText()));
+    
+    advance();
+  }
+  
+  private void clkmodeDirective() throws AssemblyInputException {
+    allowOptionalWhitespace();
+    expect(IDENT, "Expecting oscillator mode");
+    ClockMode c = parseEnum(ClockMode.class, "oscillator mode");
+    
+    allowOptionalWhitespace();
+    PllMode pll = PllMode.PLL_DISABLED;
+    if(current.is(IDENT)) {
+      pll = parseEnum(PllMode.class, "PLL mode");
+    }
+    
+    builder.setInitialClockMode(c, pll);
+  }
+  
   /*
    * org-directive ::= "org" SPACE <optional-number>
    */
@@ -455,24 +485,38 @@ public class ParallaxParser {
    */
   private int number(int def, boolean required) throws ParseException {
     int value = def;
+    int base = 0;
+    String num = null;
     if(current.is(HEX_NUMBER)) {
-      long v = Long.parseLong(current.getText().substring(1), 16);
-      if((v >> 32) != 0 && (v >> 32) != -1) {
-        throw new ParseException("Value $" + current.getText() + 
-                                 " is greater than 32 bits in length.",
-                                 current);
-      }
-      value = (int)v;
-      advance();
+      base = 16;
+      num = current.getText().substring(1);
     } else if(current.is(BINARY_NUMBER)) {
-      value = Integer.parseInt(current.getText().substring(1), 2);
-      advance();
+      base = 2;
+      num = current.getText().substring(1);
     } else if(current.is(DECIMAL_NUMBER)) {
-      value = Integer.parseInt(current.getText());
-      advance();
+      base = 10;
+      num = current.getText();
     } else if(required) {
       throw new ParseException("Expecting number, found: " + current.getText(), current);
+    } else {
+      return value;
     }
+
+    long v;
+    try {
+      v = Long.parseLong(num, base);
+    } catch(NumberFormatException e) {
+      throw new ParseException("Could not parse number " + current.getText(),
+                               current);
+    }
+    if((v >> 32) != 0 && (v >> 32) != -1) {
+      throw new ParseException("Value " + current.getText() + 
+                               " is greater than 32 bits in length.",
+                               current);
+    }
+    value = (int)v;
+    advance();
+
     return value;
   }
   
@@ -679,4 +723,16 @@ public class ParallaxParser {
     }
   }
   
+  private <E extends Enum<E>> E parseEnum(Class<E> clazz, String context)
+      throws ParseException {
+    expect(IDENT, "Expecting " + context);
+    for(E e : clazz.getEnumConstants()) {
+      if(e.toString().equalsIgnoreCase(current.getText())) {
+        advance();
+        return e;
+      }
+    }
+    
+    throw new ParseException("Invalid " + context + ": " + current, current);
+  }
 }
