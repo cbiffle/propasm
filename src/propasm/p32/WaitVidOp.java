@@ -29,5 +29,12 @@ public class WaitVidOp extends AbstractBinaryOp {
   public int getOpcode() {
     return 0x3F;
   }
+
+  @Override
+  public boolean generatesResultByDefault() {
+    return false;
+  }
+  
+  
   
 }
