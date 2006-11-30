@@ -46,11 +46,6 @@ public class CallOp extends JmpRetOp {
   }
 
   @Override
-  public boolean generatesResultByDefault() {
-    return false;
-  }
-  
-  @Override
   public Operand defaultDest(Instruction context) {
     Operand source = context.getSource();
     if(source instanceof LabelReference) {
