@@ -25,4 +25,5 @@ import propasm.model.AssemblyInputException;
  */
 public interface InclusionHandler {
   void include(String path) throws IOException, AssemblyInputException;
+  void includeBlob(String path) throws IOException;
 }

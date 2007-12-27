@@ -21,6 +21,7 @@ package propasm;
  */
 public class AssemblerConfig {
   private boolean verboseLabelDisplay = false;
+  private boolean generateBootloader = true;
 
   public boolean isVerboseLabelDisplay() {
     return verboseLabelDisplay;
@@ -29,5 +30,12 @@ public class AssemblerConfig {
   public void setVerboseLabelDisplay(boolean verboseLabelDisplay) {
     this.verboseLabelDisplay = verboseLabelDisplay;
   }
-  
+
+  public boolean isGenerateBootloader() {
+    return generateBootloader;
+  }
+
+  public void setGenerateBootloader(boolean generateBootloader) {
+    this.generateBootloader = generateBootloader; 
+  }
 }
