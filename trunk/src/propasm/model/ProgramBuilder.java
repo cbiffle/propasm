@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import propasm.util.ByteBuffer;
+import propasm.AssemblerConfig;
 
 /**
  * Generates machine code, based on information it receives from the parser.
@@ -42,6 +43,8 @@ import propasm.util.ByteBuffer;
  *
  */
 public class ProgramBuilder implements SymbolTable {
+  private final AssemblerConfig config;
+
   private ByteBuffer output = new ByteBuffer();
   /** Number of bytes reserved past the end of the image by directives. */
   private int pendingReservation = 0;
@@ -90,10 +93,13 @@ public class ProgramBuilder implements SymbolTable {
     0x00, 0x00, 0x00 // padding for alignment
   };
   
-  public ProgramBuilder() {
-    for(byte b : PREAMBLE) {
-      write(b);
-    }
+  public ProgramBuilder(AssemblerConfig config) {
+    this.config = config;
+	 if (config.isGenerateBootloader()) {
+    	for(byte b : PREAMBLE) {
+        write(b);
+      }
+	 }
     runtimeAddress = 0;
   }
   

@@ -22,6 +22,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import propasm.AssemblerConfig;
 import propasm.model.AssemblyInputException;
 import propasm.model.LogicException;
 import propasm.model.ProgramBuilder;
@@ -40,15 +44,23 @@ public class ParallaxFrontend implements InclusionHandler {
   
   private ProgramBuilder builder;
   
-  public void assemble(String[] args) throws IOException, AssemblyInputException {
-    if(args.length == 0) {
-      printUsage();
-      return;
-    }
+  public void assemble(String[] argArray) throws IOException, AssemblyInputException {
+    List<String> args = new ArrayList<String>();
+	 for (String arg : argArray) args.add(arg);
+
+	 AssemblerConfig config = new AssemblerConfig();
+	 boolean commandLineOkay = consumeSwitches(args, config);
+	 if (args.isEmpty()) {
+		 System.err.println("No input files specified.");
+		 commandLineOkay = false; // even if the flags were fine.
+	 }
+	 if (commandLineOkay == false) {
+		 printUsage();
+		 return;
+	 }
     
     for(String filename : args) {
-      
-      builder = new ProgramBuilder();
+      builder = new ProgramBuilder(config);
       long time = System.currentTimeMillis();
       try {
         parse(filename);
@@ -116,11 +128,43 @@ public class ParallaxFrontend implements InclusionHandler {
 
   }
   
+  public void includeBlob(String filename) throws IOException {
+    FileInputStream in = new FileInputStream(filename);
+	 try {
+		 while (true) {
+		 	int b = in.read();
+			if (b == -1) break;
+			builder.addByte((byte)b);
+		 }
+	 } finally {
+		 in.close();
+	 }
+  }
+
   private void printUsage() {
     System.err.println("Usage: java <vm options> -jar propasm.jar " +
-                "<input files>");
+                "<flags> <input files>");
     System.err.println("Any number of input files may be specified, though " +
                 "specifying zero\nwill get you this message.");
+	 System.err.println("Flags:");
+	 System.err.println(" -raw  Generate raw machine code without a bootloader.");
+	 System.err.println("       The Propeller won't load the output directly;" +
+	     " this is useful for making");
+	 System.err.println("       a \"coglet\" to include in larger assembly " +
+	     "programs.");
+  }
+
+  private boolean consumeSwitches(List<String> args, AssemblerConfig config) {
+	  while (args.size() > 0 && args.get(0).startsWith("-")) {
+		  String flag = args.remove(0);
+		  if (flag.equals("-raw")) {
+			  config.setGenerateBootloader(false);
+		  } else {
+			  System.err.println("Unrecognized flag: " + flag);
+			  return false;
+		  }
+	  }
+	  return true;
   }
   
 }

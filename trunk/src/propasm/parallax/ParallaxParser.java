@@ -257,6 +257,8 @@ public class ParallaxParser {
       alignDirective();
     } else if(text.equals("include")) {
       includeDirective();
+    } else if(text.equals("blob")) {
+      blobDirective();
     } else if(text.equals("xinfreq")) {
       xinfreqDirective();
     } else if(text.equals("clkmode")) {
@@ -293,6 +295,19 @@ public class ParallaxParser {
       parent.include(filename);
     } catch(IOException e) {
       throw new ParseException("Could not include " + filename, current);
+    }
+    advance();
+  }
+
+  private void blobDirective() throws AssemblyInputException {
+    allowOptionalWhitespace();
+    expect(STRING, "Expecting blob filename");
+    
+    String filename = current.getText();
+    try {
+      parent.includeBlob(filename);
+    } catch(IOException e) {
+      throw new ParseException("Could not include blob " + filename, current);
     }
     advance();
   }
