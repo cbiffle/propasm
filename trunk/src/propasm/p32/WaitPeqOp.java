@@ -29,4 +29,8 @@ public class WaitPeqOp extends AbstractBinaryOp {
     return 0x3C;
   }
   
+  @Override
+  public boolean generatesResultByDefault() {
+    return false;
+  }
 }

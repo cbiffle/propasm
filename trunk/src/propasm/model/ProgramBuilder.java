@@ -308,12 +308,14 @@ public class ProgramBuilder implements SymbolTable {
       
     }
     
-    fillInPreamble();
-    
-    byte[] bytes = output.toByteArray();
-    bytes[5] = computeChecksum(bytes);
-
-    return bytes;
+	 if (config.isGenerateBootloader()) {
+    	fillInPreamble();
+    	byte[] bytes = output.toByteArray();
+    	bytes[5] = computeChecksum(bytes);
+		return bytes;
+	 } else {
+      return output.toByteArray();
+    }
   }
   
   private void write(int value) {
