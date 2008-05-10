@@ -29,4 +29,8 @@ public class WaitPneOp extends AbstractBinaryOp {
     return 0x3D;
   }
   
+  @Override
+  public boolean generatesResultByDefault() {
+    return false;
+  }
 }
