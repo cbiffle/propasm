@@ -18,6 +18,10 @@ package propasm.model;
 /**
  * Interface for objects that handle symbol/label tables during compile time.
  * 
+ * <p>Note that most {@code SymbolTable} implementations will need to be
+ * stateful, so that they can return placeholder addresses and later fill them
+ * in.
+ * 
  * @author cbiffle
  *
  */

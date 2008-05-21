@@ -92,11 +92,11 @@ public class Token {
   /**
    * Shorthand for checking if a token is of a certain type.
    * 
-   * @param type  type desired
+   * @param otherType  type desired
    * @return {@code true} for a match, {@code false} otherwise.
    */
-  public boolean is(Type type) {
-    return this.type == type;
+  public boolean is(Type otherType) {
+    return this.type == otherType;
   }
   
   @Override public String toString() {

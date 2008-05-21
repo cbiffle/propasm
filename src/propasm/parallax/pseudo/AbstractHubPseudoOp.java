@@ -56,7 +56,7 @@ public abstract class AbstractHubPseudoOp extends HubOp {
    * {@link #getHubOp()}.
    */
   @Override
-  public Operand defaultSource(Instruction context) {
+  public Operand defaultSource(@SuppressWarnings("unused") Instruction ctx) {
     return new NumericOperand(getHubOp()); 
   }
 

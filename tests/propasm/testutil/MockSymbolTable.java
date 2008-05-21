@@ -33,13 +33,15 @@ public class MockSymbolTable implements SymbolTable {
   private final Map<String, Integer> localAddresses =
       new HashMap<String, Integer>();
   
-  public int imageAddressOfSymbol(String symbol, int offset) {
+  public int imageAddressOfSymbol(String symbol,
+      @SuppressWarnings("unused") int offset) {
     Integer addr = imageAddresses.get(symbol);
     if(addr == null) throw new IllegalStateException("Undefined: " + symbol);
     return addr;
   }
 
-  public int localAddressOfSymbol(String symbol, int offset) {
+  public int localAddressOfSymbol(String symbol, 
+      @SuppressWarnings("unused") int offset) {
     Integer addr = localAddresses.get(symbol);
     if(addr == null) throw new IllegalStateException("Undefined: " + symbol);
     return addr;

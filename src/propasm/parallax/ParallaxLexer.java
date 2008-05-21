@@ -208,7 +208,7 @@ public class ParallaxLexer {
   private boolean isDecimalDigit() {
     return (c >= '0' && c <= '9');
   }
-  private void decimalLiteral() throws IOException, ParseException {
+  private void decimalLiteral() throws IOException {
     appendAndAdvance();
     while(isDecimalDigit() || c == '_') {
       if(c == '_') {

@@ -74,7 +74,8 @@ public abstract class Operation {
    * @param context  instruction where the operand is needed.
    * @return a generated source operand for the instruction.
    */
-  public Operand defaultSource(Instruction context) {
+  public Operand defaultSource(@SuppressWarnings("unused") Instruction context)
+  {
     return null;
   }
 
@@ -86,7 +87,7 @@ public abstract class Operation {
    * @param context  instruction where the operand is needed.
    * @return a generated destination operand for the instruction.
    */
-  public Operand defaultDest(Instruction context) {
+  public Operand defaultDest(@SuppressWarnings("unused") Instruction context) {
     return null;
   }
   

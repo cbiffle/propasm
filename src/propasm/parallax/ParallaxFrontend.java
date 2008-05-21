@@ -37,14 +37,13 @@ import propasm.model.ProgramBuilder;
  *
  */
 public class ParallaxFrontend implements InclusionHandler {
-  public static void main(String[] args)
-  throws IOException, AssemblyInputException {
+  public static void main(String[] args) throws IOException {
     new ParallaxFrontend().assemble(args);
   }
   
   private ProgramBuilder builder;
   
-  public void assemble(String[] argArray) throws IOException, AssemblyInputException {
+  public void assemble(String[] argArray) throws IOException {
     List<String> args = new ArrayList<String>();
 	 for (String arg : argArray) args.add(arg);
 
