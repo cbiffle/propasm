@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import propasm.AssemblerConfig;
+
 
 /**
  * TODO: coverage of this class is not as deep as it should be.
@@ -29,7 +31,9 @@ public class TestProgramBuilder {
   private ProgramBuilder builder;
   
   @Before public void setUp() {
-    builder = new ProgramBuilder();
+    AssemblerConfig config = new AssemblerConfig();
+    config.setGenerateBootloader(true);
+    builder = new ProgramBuilder(config);
   }
   
   /**
