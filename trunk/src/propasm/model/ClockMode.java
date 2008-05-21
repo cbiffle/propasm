@@ -28,12 +28,12 @@ public enum ClockMode {
   XTAL2( 0x32, true),
   XTAL3( 0x3A, true),
   RCFAST(0x00, false) {
-    @Override public int derive(int inputFrequency) {
+    @Override public int derive(@SuppressWarnings("unused") int freq) {
       return 12000000;
     }
   },
   RCSLOW(0x01, false) {
-    @Override public int derive(int inputFrequency) {
+    @Override public int derive(@SuppressWarnings("unused") int freq) {
       return 20000;
     }
   };

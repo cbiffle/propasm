@@ -21,7 +21,7 @@ package propasm.model;
  */
 public enum PllMode {
   PLL_DISABLED {
-    public boolean isEnabled() {
+    @Override public boolean isEnabled() {
       return false;
     }
   },

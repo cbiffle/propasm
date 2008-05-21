@@ -20,27 +20,25 @@ import org.junit.Test;
 
 public class TestNumericOperand {
 
-  private NumericOperand no;
-  
   @Test public void testValidPositiveCreation() {
-    no = new NumericOperand(0x0);
-    no = new NumericOperand(0x1);
-    no = new NumericOperand(0x1FF);
+    new NumericOperand(0x0);
+    new NumericOperand(0x1);
+    new NumericOperand(0x1FF);
   }
 
   @Test public void testValidNegativeCreation() {
-    no = new NumericOperand(-1);
-    no = new NumericOperand(-42);
-    no = new NumericOperand(-256);
+    new NumericOperand(-1);
+    new NumericOperand(-42);
+    new NumericOperand(-256);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidPositiveCreation() {
-    no = new NumericOperand(0x2FF);
+    new NumericOperand(0x2FF);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidNegativeCreation() {
-    no = new NumericOperand(-257);
+    new NumericOperand(-257);
   }
 }

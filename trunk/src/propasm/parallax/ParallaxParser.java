@@ -61,7 +61,7 @@ public class ParallaxParser {
   /** Enclosing context for inclusions. */
   private final InclusionHandler parent;
   /** Token iterator derived from lexer's Iterable. */
-  private Iterator<Token> tokens;
+  private Iterator<Token> tokenStream;
   
   /** Current token being considered. */
   private Token current;
@@ -90,7 +90,7 @@ public class ParallaxParser {
    * @throws AssemblyInputException 
    */
   public void parse(Iterable<Token> tokens) throws AssemblyInputException {
-    this.tokens = tokens.iterator();
+    this.tokenStream = tokens.iterator();
     advance();
     program();
   }
@@ -719,7 +719,7 @@ public class ParallaxParser {
    * Advances to the next token.
    */
   private void advance() {
-    current = tokens.next();
+    current = tokenStream.next();
   }
   
   /**

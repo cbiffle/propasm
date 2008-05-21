@@ -62,11 +62,11 @@ public class ByteBuffer {
    * {@link #size()} - 1; this method cannot be used to seek past
    * {@link #size()}.
    * 
-   * @param position  new read/write position.
+   * @param newPosition  new read/write position.
    */
-  public void seek(int position) {
-    if(position > size) throw new IllegalArgumentException("Seeked off end");
-    this.position = position;
+  public void seek(int newPosition) {
+    if(newPosition > size) throw new IllegalArgumentException("Seeked off end");
+    this.position = newPosition;
   }
   
   /**
