@@ -23,7 +23,7 @@ import org.junit.Test;
 import propasm.testutil.MockSymbolTable;
 
 
-public class TestInstruction {
+public class InstructionTest {
   private MockSymbolTable symbolTable;
   private Instruction instruction;
   

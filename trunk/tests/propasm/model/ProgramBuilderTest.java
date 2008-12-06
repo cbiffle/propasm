@@ -27,7 +27,7 @@ import propasm.AssemblerConfig;
  * TODO: coverage of this class is not as deep as it should be.
  *
  */
-public class TestProgramBuilder {
+public class ProgramBuilderTest {
   private ProgramBuilder builder;
   
   @Before public void setUp() {

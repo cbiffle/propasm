@@ -13,32 +13,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-package propasm.model;
+package propasm.parallax;
 
+import static org.junit.Assert.*;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import propasm.model.Operation;
 
-public class TestNumericOperand {
 
-  @Test public void testValidPositiveCreation() {
-    new NumericOperand(0x0);
-    new NumericOperand(0x1);
-    new NumericOperand(0x1FF);
+/**
+ * @author cbiffle
+ *
+ */
+public class ParallaxMnemonicsTest {
+  private ParallaxMnemonics mne;
+  
+  @Before public void setUp() {
+    mne = new ParallaxMnemonics();
   }
-
-  @Test public void testValidNegativeCreation() {
-    new NumericOperand(-1);
-    new NumericOperand(-42);
-    new NumericOperand(-256);
+  
+  @Test public void testBasicGet() {
+    Operation op = mne.getOperationForMnemonic("mov");
+    assertNotNull(op);
+    assertEquals(0x28, op.getOpcode());
   }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidPositiveCreation() {
-    new NumericOperand(0x2FF);
+  
+  @Test public void testCaseVariations() {
+    assertNotNull(mne.getOperationForMnemonic("MOV"));
+    assertNotNull(mne.getOperationForMnemonic("MoV"));
   }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidNegativeCreation() {
-    new NumericOperand(-257);
+  
+  @Test public void testUnknownOperationGivesNull() {
+    assertNull(mne.getOperationForMnemonic("lwrx"));
   }
 }

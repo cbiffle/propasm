@@ -15,25 +15,30 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package propasm.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 
-public class TestPredicate {
-  /**
-   * A very loose check of {@link Predicate#applyToWord(int)}.  Doesn't attempt
-   * to check the actual flag values for more than a handful of Predicates, but
-   * validates that those effects touch only the bits they should (and thus the
-   * application algorithm). 
-   */
-  @Test public void testBasicApplication() {
-    int word = 0xA5A5A5A5;
-    word = Predicate.IF_NEVER.applyToWord(word);
-    assertEquals(0xA581A5A5, word);
-    word = Predicate.IF_AE.applyToWord(word);
-    assertEquals(0xA58DA5A5, word);
-    word = Predicate.IF_C_EQ_Z.applyToWord(word);
-    assertEquals(0xA5A5A5A5, word);
+public class NumericOperandTest {
+
+  @Test public void testValidPositiveCreation() {
+    new NumericOperand(0x0);
+    new NumericOperand(0x1);
+    new NumericOperand(0x1FF);
+  }
+
+  @Test public void testValidNegativeCreation() {
+    new NumericOperand(-1);
+    new NumericOperand(-42);
+    new NumericOperand(-256);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidPositiveCreation() {
+    new NumericOperand(0x2FF);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidNegativeCreation() {
+    new NumericOperand(-257);
   }
 }

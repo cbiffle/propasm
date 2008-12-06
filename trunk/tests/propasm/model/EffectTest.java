@@ -13,39 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-package propasm.parallax;
+package propasm.model;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import propasm.model.Operand;
 
-
-/**
- * @author cbiffle
- *
- */
-public class TestParallaxRegisterNames {
-  private ParallaxRegisterNames prn;
-  
-  @Before public void setUp() {
-    prn = new ParallaxRegisterNames();
-  }
-  
-  @Test public void testBasicGet() {
-    Operand reg = prn.getRegister("ina");
-    assertNotNull(reg);
-    assertEquals(0x1F2, reg.getValue());
-  }
-  
-  @Test public void testCaseVariations() {
-    assertNotNull(prn.getRegister("INA"));
-    assertNotNull(prn.getRegister("InA"));
-  }
-  
-  @Test public void testUnknownRegisterGivesNull() {
-    assertNull(prn.getRegister("ax"));
+public class EffectTest {
+  /**
+   * A very loose check of {@link Effect#applyToWord(int)}.  Doesn't attempt to
+   * check the actual flag values for more than a handful of Effects, but
+   * validates that those effects touch only the bits they should (and thus the
+   * application algorithm). 
+   */
+  @Test public void testBasicApplication() {
+    int word = 0xA5A5A5A5;
+    word = Effect.NC.applyToWord(word);
+    assertEquals(0xA4A5A5A5, word);
+    word = Effect.WZ.applyToWord(word);
+    assertEquals(0xA6A5A5A5, word);
+    word = Effect.NR.applyToWord(word);
+    assertEquals(0xA625A5A5, word);
   }
 }
