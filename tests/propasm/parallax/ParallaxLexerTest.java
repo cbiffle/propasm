@@ -31,7 +31,7 @@ import static propasm.parallax.Token.Type.*;
  * @author cbiffle
  *
  */
-public class TestParallaxLexer {
+public class ParallaxLexerTest {
   private ParallaxLexer lexer;
   
   @Test public void testEmptyString() throws ParseException, IOException {

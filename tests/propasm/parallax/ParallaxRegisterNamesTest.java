@@ -20,32 +20,32 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import propasm.model.Operation;
+import propasm.model.Operand;
 
 
 /**
  * @author cbiffle
  *
  */
-public class TestParallaxMnemonics {
-  private ParallaxMnemonics mne;
+public class ParallaxRegisterNamesTest {
+  private ParallaxRegisterNames prn;
   
   @Before public void setUp() {
-    mne = new ParallaxMnemonics();
+    prn = new ParallaxRegisterNames();
   }
   
   @Test public void testBasicGet() {
-    Operation op = mne.getOperationForMnemonic("mov");
-    assertNotNull(op);
-    assertEquals(0x28, op.getOpcode());
+    Operand reg = prn.getRegister("ina");
+    assertNotNull(reg);
+    assertEquals(0x1F2, reg.getValue());
   }
   
   @Test public void testCaseVariations() {
-    assertNotNull(mne.getOperationForMnemonic("MOV"));
-    assertNotNull(mne.getOperationForMnemonic("MoV"));
+    assertNotNull(prn.getRegister("INA"));
+    assertNotNull(prn.getRegister("InA"));
   }
   
-  @Test public void testUnknownOperationGivesNull() {
-    assertNull(mne.getOperationForMnemonic("lwrx"));
+  @Test public void testUnknownRegisterGivesNull() {
+    assertNull(prn.getRegister("ax"));
   }
 }

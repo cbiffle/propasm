@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 
-public class TestOperation {
+public class OperationTest {
  
   @Test public void testBasicTemplate() {
     Operation op = new Operation() {

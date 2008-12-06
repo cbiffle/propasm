@@ -20,20 +20,20 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 
-public class TestEffect {
+public class PredicateTest {
   /**
-   * A very loose check of {@link Effect#applyToWord(int)}.  Doesn't attempt to
-   * check the actual flag values for more than a handful of Effects, but
+   * A very loose check of {@link Predicate#applyToWord(int)}.  Doesn't attempt
+   * to check the actual flag values for more than a handful of Predicates, but
    * validates that those effects touch only the bits they should (and thus the
    * application algorithm). 
    */
   @Test public void testBasicApplication() {
     int word = 0xA5A5A5A5;
-    word = Effect.NC.applyToWord(word);
-    assertEquals(0xA4A5A5A5, word);
-    word = Effect.WZ.applyToWord(word);
-    assertEquals(0xA6A5A5A5, word);
-    word = Effect.NR.applyToWord(word);
-    assertEquals(0xA625A5A5, word);
+    word = Predicate.IF_NEVER.applyToWord(word);
+    assertEquals(0xA581A5A5, word);
+    word = Predicate.IF_AE.applyToWord(word);
+    assertEquals(0xA58DA5A5, word);
+    word = Predicate.IF_C_EQ_Z.applyToWord(word);
+    assertEquals(0xA5A5A5A5, word);
   }
 }
